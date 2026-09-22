@@ -1,0 +1,41 @@
+---
+- name: Ensure keyrings directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Add New Relic GPG key
+  ansible.builtin.get_url:
+    url: https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
+    dest: /etc/apt/keyrings/newrelic-infra.asc
+  become: yes
+
+- name: Add New Relic repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/newrelic-infra.asc] https://download.newrelic.com/infrastructure_agent/linux/apt/ {{ ansible_distribution_release }} main"
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Install New Relic Infrastructure Agent
+  ansible.builtin.apt:
+    name: newrelic-infra
+    state: present
+  become: yes
+
+- name: Deploy New Relic configuration
+  ansible.builtin.template:
+    src: newrelic-infra.yml.j2
+    dest: /etc/newrelic-infra.yml
+    mode: '0644'
+  become: yes
+  notify: restart newrelic
+
+- name: Ensure New Relic service is started and enabled
+  ansible.builtin.service:
+    name: newrelic-infra
+    state: started
+    enabled: yes
+  become: yes

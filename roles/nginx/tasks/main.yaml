@@ -1,0 +1,23 @@
+---
+- name: Install Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+  become: yes
+
+- name: Ensure Nginx is started and enabled on boot
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Deploy custom index.html template
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  become: yes
+  notify: restart nginx

@@ -1,0 +1,6 @@
+---
+- name: restart newrelic
+  ansible.builtin.service:
+    name: newrelic-infra
+    state: restarted
+  become: yes

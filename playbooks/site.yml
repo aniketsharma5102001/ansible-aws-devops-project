@@ -1,0 +1,18 @@
+---
+- name: Apply common baseline configuration
+  hosts: all
+  vars_files:
+    - ../vault/secrets.yml
+  roles:
+    - common
+    - newrelic
+
+- name: Configure Web Servers
+  hosts: web
+  roles:
+    - nginx
+
+- name: Configure Application Servers
+  hosts: app
+  roles:
+    - docker

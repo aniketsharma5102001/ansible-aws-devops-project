@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <title>Ansible DevOps Project</title>
+  </head>
+  <body>
+    <h1>Welcome to the Automated Web Server!</h1>
+    <p>This server was configured entirely by Ansible.</p>
+    <hr>
+    <p><strong>Server Hostname:</strong> {{ ansible_hostname }}</p>
+    <p><strong>Operating System:</strong> {{ ansible_distribution }} {{ ansible_distribution_version }}</p>
+  </body>
+</html>

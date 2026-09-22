@@ -1,0 +1,7 @@
+*.pem
+*.retry
+.ansible/
+__pycache__/
+*.swp
+.DS_Store
+Thumbs.db
