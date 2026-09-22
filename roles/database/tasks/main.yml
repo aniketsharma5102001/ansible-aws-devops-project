@@ -1,0 +1,54 @@
+---
+- name: Install PostgreSQL and Python dependencies
+  ansible.builtin.apt:
+    name:
+      - acl
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2
+    state: present
+    update_cache: yes
+
+- name: Ensure PostgreSQL service is started and enabled
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Create application database
+  community.postgresql.postgresql_db:
+    name: webapp_db
+    state: present
+  become: yes
+  become_user: postgres
+
+- name: Create application user with password from Vault
+  community.postgresql.postgresql_user:
+    name: webapp_user
+    password: "{{ db_password }}"
+    state: present
+  become: yes
+  become_user: postgres
+
+- name: Create application database and assign owner
+  community.postgresql.postgresql_db:
+    name: webapp_db
+    owner: webapp_user
+    state: present
+  become: yes
+  become_user: postgres
+
+- name: Configure PostgreSQL to listen on all addresses
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/16/main/postgresql.conf
+    regexp: "^#?listen_addresses"
+    line: "listen_addresses = '*'"
+  become: yes
+  notify: restart postgresql
+
+- name: Allow remote connections for the application user
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/16/main/pg_hba.conf
+    line: "host    webapp_db       webapp_user     0.0.0.0/0               scram-sha-256"
+  become: yes
+  notify: restart postgresql

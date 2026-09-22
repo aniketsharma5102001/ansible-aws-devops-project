@@ -16,3 +16,12 @@
   hosts: app
   roles:
     - docker
+
+- name: Configure Database Servers
+  hosts: database
+  become: yes
+  vars_files:
+    - ../vault/secrets.yml
+  roles:
+    - common
+    - database
