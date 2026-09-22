@@ -56,6 +56,7 @@ The project currently utilizes two AWS EC2 `t2.micro` instances:
 Ansible operates on a push-based model. The local machine acts as the **Controller**, utilizing SSH to enforce the desired state on the AWS **Managed Nodes**. We utilize variables, facts, handlers, and Jinja2 templates to make the configuration dynamic and reusable.
 
 ## 8. Repository Structure
+```text
 ansible-aws-devops-project/
 ├── ansible.cfg              # Ansible configuration settings
 ├── inventory/               # Defines the AWS host IP addresses
@@ -67,6 +68,7 @@ ansible-aws-devops-project/
 │   ├── nginx/               # Web server installation and templating
 │   └── newrelic/            # Infrastructure agent and GPG keys
 └── vault/                   # Encrypted API keys and passwords
+```
 
 ## 9. Setup Instructions
 1. **Clone the repository:**
