@@ -1,0 +1,38 @@
+name: Ansible Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - aniketsharma5102001-patch-1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+      - name: Create Vault Password File
+        run: echo "${{ secrets.VAULT_PASSWORD }}" > .vault_pass
+
+      - name: Run Ansible Playbook
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          export ANSIBLE_PRIVATE_KEY_FILE=~/.ssh/id_rsa
+          ansible-playbook playbooks/site.yml --vault-password-file .vault_pass
